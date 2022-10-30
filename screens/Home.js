@@ -1,23 +1,37 @@
 import { useState } from 'react';
-import { View, SafeArea, FlatList, Text } from 'react-native';
+import { View, SafeAreaView, FlatList } from 'react-native';
 // Flat list renders only when they r about to appear on screen and delete
 // them when they r off the view which will reduce the memory usage
 // SafeArea renders content within the safe area boundaries of a device to make sure everything is within the view
 import { COLORS, NFTData } from '../constants';
-import { NFTCard, HomeHeader, FocusStatusBar } from '../components';
+import { NFTCard, HomeHeader, FocusedStatusBar } from '../components';
 
 const Home = () => {
+    const [nftData, setNftData] = useState(NFTData);
+    const handleSearch = (value) => {
+        if (!value.length) return setNftData(NFTData);
+
+        const filteredData = NFTData.filter((item) =>
+            item.name.toLowerCase().includes(value.toLowerCase()))
+
+        if (filteredData.length) {
+            setNftData(filteredData)
+        } else {
+            setNftData(NFTData)
+        }
+    }
+
     return (
-        <SafeArea style={{ flex: 1 }}>
-            <FocusStatusBar background={COLORS.primary} />
+        <SafeAreaView style={{ flex: 1 }}>
+            <FocusedStatusBar backgroundColor={COLORS.primary} />
 
             <View style={{ flex: 1 }}>
                 <View style={{ zIndex: 0 }}>
-                    <FlatList data={NFTData}
-                        renderItem={(item) => <TNFTCard data={item} />}
+                    <FlatList data={nftData}
+                        renderItem={({ item }) => <NFTCard data={item} />}
                         keyExtractor={(item) => item.id}
                         showsVerticalScrollIndicator={false}
-                        ListHeaderComponent={<HomeHeader />}
+                        ListHeaderComponent={<HomeHeader onSearch={handleSearch} />}
                     />
                 </View>
                 <View style={
@@ -34,8 +48,8 @@ const Home = () => {
                     <View style={{ flex: 1, background: COLORS.white }} />
                 </View>
             </View>
-        </SafeArea>
+        </SafeAreaView>
     )
 }
 
-export default Home
+export default Home;
